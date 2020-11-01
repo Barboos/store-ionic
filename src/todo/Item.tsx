@@ -1,9 +1,13 @@
 import React from 'react';
-import { ItemProps } from './useItems';
+import { IonItem, IonLabel } from '@ionic/react';
+import { ItemProps } from './ItemProps';
 
 const Item: React.FC<ItemProps> = ({ id, title, description, price }) => {
     return (
-        <div>{title}, {description}, {price}</div>
+        <IonItem>
+            <IonLabel>{title}, {description}, {price}</IonLabel>
+        </IonItem>
+
     );
 };
 
