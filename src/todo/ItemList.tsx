@@ -35,6 +35,7 @@ const ItemList: React.FC<RouteComponentProps> = ({ history }) => {
                         {items.map(({ id, title, description, price}) =>
                             <Item
                                 key={id}
+                                id={id}
                                 title={title}
                                 description={description}
                                 price={price}
