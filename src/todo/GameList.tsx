@@ -12,13 +12,13 @@ import {
     IonToolbar
 } from '@ionic/react';
 import { add } from 'ionicons/icons';
-import Item from './Item';
+import Item from './Game';
 import { getLogger } from '../core';
-import { ItemContext } from './ItemProvider';
+import { ItemContext } from './GameProvider';
 
-const log = getLogger('ItemList');
+const log = getLogger('GameList');
 
-const ItemList: React.FC<RouteComponentProps> = ({ history }) => {
+const GameList: React.FC<RouteComponentProps> = ({ history }) => {
     const { items, fetching, fetchingError } = useContext(ItemContext);
     log('render');
     return (
@@ -56,4 +56,4 @@ const ItemList: React.FC<RouteComponentProps> = ({ history }) => {
     );
 };
 
-export default ItemList;
+export default GameList;

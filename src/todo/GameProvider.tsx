@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { getLogger } from '../core';
-import { ItemProps } from './ItemProps';
-import { createItem, getItems, updateItem, newWebSocket } from './itemApi';
+import { GameProps } from './GameProps';
+import { createItem, getItems, updateItem, newWebSocket } from './GameApi';
 
-const log = getLogger('ItemProvider');
+const log = getLogger('GameProvider');
 
-type SaveItemFn = (item: ItemProps) => Promise<any>;
+type SaveItemFn = (item: GameProps) => Promise<any>;
 
-export interface ItemsState {
-    items?: ItemProps[],
+export interface GamesState {
+    items?: GameProps[],
     fetching: boolean,
     fetchingError?: Error | null,
     saving: boolean,
@@ -22,7 +22,7 @@ interface ActionProps {
     payload?: any,
 }
 
-const initialState: ItemsState = {
+const initialState: GamesState = {
     fetching: false,
     saving: false,
 };
@@ -34,7 +34,7 @@ const SAVE_ITEM_STARTED = 'SAVE_ITEM_STARTED';
 const SAVE_ITEM_SUCCEEDED = 'SAVE_ITEM_SUCCEEDED';
 const SAVE_ITEM_FAILED = 'SAVE_ITEM_FAILED';
 
-const reducer: (state: ItemsState, action: ActionProps) => ItemsState =
+const reducer: (state: GamesState, action: ActionProps) => GamesState =
     (state, { type, payload }) => {
         switch(type) {
             case FETCH_ITEMS_STARTED:
@@ -62,13 +62,13 @@ const reducer: (state: ItemsState, action: ActionProps) => ItemsState =
         }
     };
 
-export const ItemContext = React.createContext<ItemsState>(initialState);
+export const ItemContext = React.createContext<GamesState>(initialState);
 
-interface ItemProviderProps {
+interface GameProviderProps {
     children: PropTypes.ReactNodeLike,
 }
 
-export const ItemProvider: React.FC<ItemProviderProps> = ({ children }) => {
+export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const { items, fetching, fetchingError, saving, savingError } = state;
     useEffect(getItemsEffect, []);
@@ -105,7 +105,7 @@ export const ItemProvider: React.FC<ItemProviderProps> = ({ children }) => {
         }
     }
 
-    async function saveItemCallback(item: ItemProps) {
+    async function saveItemCallback(item: GameProps) {
         try {
             log('saveItem started');
             dispatch({ type: SAVE_ITEM_STARTED });

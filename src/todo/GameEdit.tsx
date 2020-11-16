@@ -13,22 +13,22 @@ import {
     IonLabel
 } from '@ionic/react';
 import { getLogger } from '../core';
-import { ItemContext } from './ItemProvider';
+import { ItemContext } from './GameProvider';
 import { RouteComponentProps } from 'react-router';
-import { ItemProps } from './ItemProps';
+import { GameProps } from './GameProps';
 
-const log = getLogger('ItemEdit');
+const log = getLogger('GameEdit');
 
-interface ItemEditProps extends RouteComponentProps<{
+interface GameEditProps extends RouteComponentProps<{
     id?: string;
 }> {}
 
-const ItemEdit: React.FC<ItemEditProps> = ({ history, match }) => {
+const GameEdit: React.FC<GameEditProps> = ({ history, match }) => {
     const { items, saving, savingError, saveItem } = useContext(ItemContext);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
-    const [item, setItem] = useState<ItemProps>();
+    const [item, setItem] = useState<GameProps>();
     useEffect(() => {
         log('useEffect');
         const routeId = match.params.id || '';
@@ -88,4 +88,4 @@ const ItemEdit: React.FC<ItemEditProps> = ({ history, match }) => {
     );
 };
 
-export default ItemEdit;
+export default GameEdit;

@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { getLogger } from '../core';
-import { ItemProps } from './ItemProps';
+import { GameProps } from './GameProps';
 
 const log = getLogger('itemApi');
 
 const baseUrl = 'localhost:3000';
-const itemUrl = `http://${baseUrl}/item`;
+const itemUrl = `http://${baseUrl}/game`;
 
 interface ResponseProps<T> {
     data: T;
@@ -30,23 +30,23 @@ const config = {
     }
 };
 
-export const getItems: () => Promise<ItemProps[]> = () => {
+export const getItems: () => Promise<GameProps[]> = () => {
     console.log("am intrat")
     return withLogs(axios.get(itemUrl, config), 'getItems');
 }
 
-export const createItem: (item: ItemProps) => Promise<ItemProps[]> = item => {
+export const createItem: (item: GameProps) => Promise<GameProps[]> = item => {
     return withLogs(axios.post(itemUrl, item, config), 'createItem');
 }
 
-export const updateItem: (item: ItemProps) => Promise<ItemProps[]> = item => {
+export const updateItem: (item: GameProps) => Promise<GameProps[]> = item => {
     return withLogs(axios.put(`${itemUrl}/${item.id}`, item, config), 'updateItem');
 }
 
 interface MessageData {
     event: string;
     payload: {
-        item: ItemProps;
+        item: GameProps;
     };
 }
 

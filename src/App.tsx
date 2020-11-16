@@ -22,20 +22,20 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import { ItemProvider } from './todo/ItemProvider';
+import { GameProvider } from './todo/GameProvider';
 
 const App: React.FC = () => (
   <IonApp>
-      <ItemProvider>
+      <GameProvider>
           <IonReactRouter>
               <IonRouterOutlet>
-                  <Route path="/items" component={ItemList} exact={true} />
-                  <Route path="/item" component={ItemEdit} exact={true} />
-                  <Route path="/item/:id" component={ItemEdit} exact={true} />
-                  <Route exact path="/" render={() => <Redirect to="/items" />} />
+                  <Route path="/games" component={ItemList} exact={true} />
+                  <Route path="/game" component={ItemEdit} exact={true} />
+                  <Route path="/game/:id" component={ItemEdit} exact={true} />
+                  <Route exact path="/" render={() => <Redirect to="/games" />} />
               </IonRouterOutlet>
           </IonReactRouter>
-      </ItemProvider>
+      </GameProvider>
   </IonApp>
 );
 
