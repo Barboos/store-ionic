@@ -1,60 +1,36 @@
 import axios from 'axios';
-import { getLogger } from '../core';
+import {authConfig, baseUrl, getLogger, withLogs} from '../core';
 import { GameProps } from './GameProps';
 
-const log = getLogger('itemApi');
+const itemUrl = `http://${baseUrl}/api/game`;
 
-const baseUrl = 'localhost:3000';
-const itemUrl = `http://${baseUrl}/game`;
 
-interface ResponseProps<T> {
-    data: T;
+export const getItems: (token: string) => Promise<GameProps[]> = token => {
+    return withLogs(axios.get(itemUrl, authConfig(token)), 'getItems');
 }
 
-function withLogs<T>(promise: Promise<ResponseProps<T>>, fnName: string): Promise<T> {
-    log(`${fnName} - started`);
-    return promise
-        .then(res => {
-            log(`${fnName} - succeeded`);
-            return Promise.resolve(res.data);
-        })
-        .catch(err => {
-            log(`${fnName} - failed`);
-            return Promise.reject(err);
-        });
+export const createItem: (token: string, item: GameProps) => Promise<GameProps[]> = (token, item) => {
+    console.log(item);
+    return withLogs(axios.post(itemUrl, item, authConfig(token)), 'createItem');
 }
 
-const config = {
-    headers: {
-        'Content-Type': 'application/json'
-    }
-};
-
-export const getItems: () => Promise<GameProps[]> = () => {
-    console.log("am intrat")
-    return withLogs(axios.get(itemUrl, config), 'getItems');
-}
-
-export const createItem: (item: GameProps) => Promise<GameProps[]> = item => {
-    return withLogs(axios.post(itemUrl, item, config), 'createItem');
-}
-
-export const updateItem: (item: GameProps) => Promise<GameProps[]> = item => {
-    return withLogs(axios.put(`${itemUrl}/${item.id}`, item, config), 'updateItem');
+export const updateItem: (token: string, item: GameProps) => Promise<GameProps[]> = (token, item) => {
+    return withLogs(axios.put(`${itemUrl}/${item._id}`, item, authConfig(token)), 'updateItem');
 }
 
 interface MessageData {
-    event: string;
-    payload: {
-        item: GameProps;
-    };
+    type: string;
+    payload: GameProps;
 }
 
+const log = getLogger('ws');
 
-export const newWebSocket = (onMessage: (data: MessageData) => void) => {
-    const ws = new WebSocket(`ws://${baseUrl}`)
+
+export const newWebSocket = (token: string, onMessage: (data: MessageData) => void) => {
+    const ws = new WebSocket(`ws://${baseUrl}`);
     ws.onopen = () => {
         log('web socket onopen');
+        ws.send(JSON.stringify({ type: 'authorization', payload: { token } }));
     };
     ws.onclose = () => {
         log('web socket onclose');

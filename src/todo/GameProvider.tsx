@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useReducer } from 'react';
+import React, {useCallback, useContext, useEffect, useReducer} from 'react';
 import PropTypes from 'prop-types';
 import { getLogger } from '../core';
 import { GameProps } from './GameProps';
 import { createItem, getItems, updateItem, newWebSocket } from './GameApi';
+import {AuthContext} from "../auth";
 
 const log = getLogger('GameProvider');
 
@@ -48,7 +49,7 @@ const reducer: (state: GamesState, action: ActionProps) => GamesState =
             case SAVE_ITEM_SUCCEEDED:
                 const items = [...(state.items || [])];
                 const item = payload.item;
-                const index = items.findIndex(it => it.id === item.id);
+                const index = items.findIndex(it => it._id === item._id);
                 if (index === -1) {
                     items.splice(0, 0, item);
                 } else {
@@ -69,11 +70,12 @@ interface GameProviderProps {
 }
 
 export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
+    const { token } = useContext(AuthContext);
     const [state, dispatch] = useReducer(reducer, initialState);
     const { items, fetching, fetchingError, saving, savingError } = state;
-    useEffect(getItemsEffect, []);
-    useEffect(wsEffect, []);
-    const saveItem = useCallback<SaveItemFn>(saveItemCallback, []);
+    useEffect(getItemsEffect, [token]);
+    useEffect(wsEffect, [token]);
+    const saveItem = useCallback<SaveItemFn>(saveItemCallback, [token]);
     const value = { items, fetching, fetchingError, saving, savingError, saveItem };
     log('returns');
     return (
@@ -90,10 +92,15 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
         }
 
         async function fetchItems() {
+            if (!token?.trim()) {
+                return;
+            }
             try {
                 log('fetchItems started');
                 dispatch({ type: FETCH_ITEMS_STARTED });
-                const items = await getItems();
+                const items = await getItems(token);
+                console.log("ITEMELEMELE: ");
+                console.log(items);
                 log('fetchItems succeeded');
                 if (!canceled) {
                     dispatch({ type: FETCH_ITEMS_SUCCEEDED, payload: { items } });
@@ -109,7 +116,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
         try {
             log('saveItem started');
             dispatch({ type: SAVE_ITEM_STARTED });
-            const savedItem = await (item.id ? updateItem(item) : createItem(item));
+            const savedItem = await (item._id ? updateItem(token, item) : createItem(token, item));
             log('saveItem succeeded');
             dispatch({ type: SAVE_ITEM_SUCCEEDED, payload: { item: savedItem } });
         } catch (error) {
@@ -121,20 +128,23 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     function wsEffect() {
         let canceled = false;
         log('wsEffect - connecting');
-        const closeWebSocket = newWebSocket(message => {
-            if (canceled) {
-                return;
-            }
-            const { event, payload: { item }} = message;
-            log(`ws message, item ${event}`);
-            if (event === 'created' || event === 'updated') {
-                dispatch({ type: SAVE_ITEM_SUCCEEDED, payload: { item } });
-            }
-        });
+        let closeWebSocket: () => void;
+        if (token?.trim()) {
+            closeWebSocket = newWebSocket(token, message => {
+                if (canceled) {
+                    return;
+                }
+                const { type, payload: item } = message;
+                log(`ws message, item ${type}`);
+                if (type === 'created' || type === 'updated') {
+                    dispatch({ type: SAVE_ITEM_SUCCEEDED, payload: { item } });
+                }
+            });
+        }
         return () => {
             log('wsEffect - disconnecting');
             canceled = true;
-            closeWebSocket();
+            closeWebSocket?.();
         }
     }
 };

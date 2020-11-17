@@ -32,7 +32,7 @@ const GameEdit: React.FC<GameEditProps> = ({ history, match }) => {
     useEffect(() => {
         log('useEffect');
         const routeId = match.params.id || '';
-        const item = items?.find(it => it.id === routeId);
+        const item = items?.find(it => it._id === routeId);
         setItem(item);
         if (item) {
             setTitle(item.title);
@@ -42,6 +42,7 @@ const GameEdit: React.FC<GameEditProps> = ({ history, match }) => {
     }, [match.params.id, items]);
     const handleSave = () => {
         const editedItem = item ? { ...item, title, description, price } : { title, description, price };
+        console.log("aici este" + item);
         saveItem && saveItem(editedItem).then(() => history.goBack());
     };
     log('render');

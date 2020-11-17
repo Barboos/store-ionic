@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { ItemEdit, ItemList } from './todo';
+import { GameEdit, GameList } from './todo';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -23,20 +23,24 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 import { GameProvider } from './todo/GameProvider';
+import { AuthProvider, Login, PrivateRoute } from './auth';
 
 const App: React.FC = () => (
-  <IonApp>
-      <GameProvider>
-          <IonReactRouter>
-              <IonRouterOutlet>
-                  <Route path="/games" component={ItemList} exact={true} />
-                  <Route path="/game" component={ItemEdit} exact={true} />
-                  <Route path="/game/:id" component={ItemEdit} exact={true} />
-                  <Route exact path="/" render={() => <Redirect to="/games" />} />
-              </IonRouterOutlet>
-          </IonReactRouter>
-      </GameProvider>
-  </IonApp>
+    <IonApp>
+        <IonReactRouter>
+            <IonRouterOutlet>
+                <AuthProvider>
+                    <Route path="/login" component={Login} exact={true}/>
+                    <GameProvider>
+                        <PrivateRoute path="/games" component={GameList} exact={true}/>
+                        <PrivateRoute path="/game" component={GameEdit} exact={true}/>
+                        <PrivateRoute path="/game/:id" component={GameEdit} exact={true}/>
+                    </GameProvider>
+                    <Route exact path="/" render={() => <Redirect to="/games"/>}/>
+                </AuthProvider>
+            </IonRouterOutlet>
+        </IonReactRouter>
+    </IonApp>
 );
 
 export default App;
