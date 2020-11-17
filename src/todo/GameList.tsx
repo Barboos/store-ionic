@@ -12,7 +12,7 @@ import {
     IonTitle,
     IonToolbar, IonButton, IonSelect, IonSelectOption, IonInfiniteScroll, IonInfiniteScrollContent
 } from '@ionic/react';
-import {add, filter} from 'ionicons/icons';
+import {add} from 'ionicons/icons';
 import Item from './Game';
 import { getLogger } from '../core';
 import { ItemContext } from './GameProvider';
@@ -34,8 +34,8 @@ const GameList: React.FC<RouteComponentProps> = ({ history }) => {
     log('render');
     async function searchNext($event: CustomEvent<void>) {
         if (items && perPage < items.length) {
-            setGamesShow([...gamesShow, ...items.slice(perPage, 17 + perPage)]);
-            setPerPage(perPage + 17);
+            setGamesShow([...gamesShow, ...items.slice(perPage, 16 + perPage)]);
+            setPerPage(perPage + 16);
         } else {
             setDisableInfiniteScroll(true);
         }
@@ -54,9 +54,12 @@ const GameList: React.FC<RouteComponentProps> = ({ history }) => {
     }, [items]);
     useEffect(() => {
         if (searchGames && items) {
-            setGamesShow(items.filter((car) => car.title.startsWith(searchGames)));
+            setGamesShow(items.filter((car) => car.title.startsWith(searchGames)).slice(0, 16));
         }
-    }, [searchGames]);
+        else if(items){
+            setGamesShow(items.slice(0, 16));
+        }
+    }, [searchGames, items]);
 
     useEffect(() => {
         if (filterGames && items) {
@@ -65,7 +68,7 @@ const GameList: React.FC<RouteComponentProps> = ({ history }) => {
             else
                 setGamesShow(gamesShow.filter((game) => Number(game.price) > 50 ));
         }
-    }, [filterGames]);
+    }, [filterGames, gamesShow, items]);
     return (
         <IonPage>
             <IonHeader>
