@@ -151,7 +151,7 @@ const GameEdit: React.FC<GameEditProps> = ({ history, match }) => {
                 <p>Version 1.0</p>
             </div>
             <IonModal isOpen={showModal} enterAnimation={enterAnimation} leaveAnimation={leaveAnimation}>
-                <img src={logoPath} />
+                <img src={logoPath} alt = {"logo"} />
                 <IonButton onClick={() => setShowModal(false)}>Close Modal</IonButton>
             </IonModal>
             <IonButton onClick={() => setShowModal(true)}>Show Logo</IonButton>

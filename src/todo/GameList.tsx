@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {Redirect, RouteComponentProps} from 'react-router';
 import { createAnimation} from '@ionic/react';
 import {
+    IonActionSheet,
     IonContent,
     IonFab,
     IonFabButton,
@@ -13,16 +14,19 @@ import {
     IonTitle,
     IonToolbar, IonButton, IonSelect, IonSelectOption, IonInfiniteScroll, IonInfiniteScrollContent
 } from '@ionic/react';
-import {add} from 'ionicons/icons';
+import {add, camera, close, trash, map} from 'ionicons/icons';
 import Item from './Game';
 import { getLogger } from '../core';
 import { ItemContext } from './GameProvider';
 import { AuthContext } from "../auth";
 import {GameProps} from "./GameProps";
+import {Photo,usePhotoGallery} from "../utils/usePhotoGallery";
 
 const log = getLogger('GameList');
 
 const GameList: React.FC<RouteComponentProps> = ({ history }) => {
+    const { photos, takePhoto, deletePhoto } = usePhotoGallery();
+    const [photoToDelete, setPhotoToDelete] = useState<Photo>();
     const { items, fetching, fetchingError } = useContext(ItemContext);
     const [searchGames, setSearchGame] = useState<string>('');
     const [gamesShow, setGamesShow] = useState<GameProps[]>([]);
@@ -129,10 +133,6 @@ const GameList: React.FC<RouteComponentProps> = ({ history }) => {
                 </IonToolbar>
 
             </IonHeader>
-            {/*<div className="container">*/}
-            {/*    /!*<MyComponent />*!/*/}
-            {/*    /!*<MyModal />*!/*/}
-            {/*</div>*/}
             <IonContent>
                 <IonLoading isOpen={fetching} message="Fetching items" />
                 <IonSearchbar
@@ -181,6 +181,42 @@ const GameList: React.FC<RouteComponentProps> = ({ history }) => {
                         <IonIcon icon={add} />
                     </IonFabButton>
                 </IonFab>
+                <IonFab vertical="bottom" horizontal="start" slot="fixed">
+                    <IonFabButton
+                        onClick={() => {
+                            history.push("/game/map");
+                        }}
+                    >
+                        <IonIcon icon={map} />
+                    </IonFabButton>
+                </IonFab>
+                <IonFab vertical="bottom" horizontal="center" slot="fixed">
+                    <IonFabButton onClick={() => takePhoto()}>
+                        <IonIcon icon={camera} />
+                    </IonFabButton>
+                </IonFab>
+                <IonActionSheet
+                    isOpen={!!photoToDelete}
+                    buttons={[
+                        {
+                            text: "Delete",
+                            role: "destructive",
+                            icon: trash,
+                            handler: () => {
+                                if (photoToDelete) {
+                                    deletePhoto(photoToDelete);
+                                    setPhotoToDelete(undefined);
+                                }
+                            },
+                        },
+                        {
+                            text: "Cancel",
+                            icon: close,
+                            role: "cancel",
+                        },
+                    ]}
+                    onDidDismiss={() => setPhotoToDelete(undefined)}
+                />
             </IonContent>
             <div className="owner" >
                 <p>Made by Andrei Craiu</p>

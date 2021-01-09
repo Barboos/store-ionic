@@ -24,6 +24,7 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import { GameProvider } from './todo/GameProvider';
 import { AuthProvider, Login, PrivateRoute } from './auth';
+import MapPage from './map/MapPage';
 
 const App: React.FC = () => (
     <IonApp>
@@ -34,7 +35,8 @@ const App: React.FC = () => (
                     <GameProvider>
                         <PrivateRoute path="/games" component={GameList} exact={true}/>
                         <PrivateRoute path="/game" component={GameEdit} exact={true}/>
-                        <PrivateRoute path="/game/:id" component={GameEdit} exact={true}/>
+                        {/*<PrivateRoute path="/game/:id" component={GameEdit} exact={true}/>*/}
+                        <PrivateRoute path="/game/map" component={MapPage} exact={true}/>
                     </GameProvider>
                     <Route exact path="/" render={() => <Redirect to="/games"/>}/>
                 </AuthProvider>
