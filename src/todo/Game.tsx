@@ -1,5 +1,8 @@
 import React from 'react';
-import { IonItem, IonLabel } from '@ionic/react';
+import {
+    IonItem,
+    IonLabel
+} from '@ionic/react';
 import { GameProps } from './GameProps';
 
 interface GamePropsExt extends GameProps {
@@ -7,6 +10,7 @@ interface GamePropsExt extends GameProps {
 }
 
 const Game: React.FC<GamePropsExt> = ({ _id, title, description, price, onEdit }) => {
+
     return (
         <IonItem onClick={() => onEdit(_id)}>
             <IonLabel>{title}, {description}, {price}</IonLabel>

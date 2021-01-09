@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Redirect, RouteComponentProps} from 'react-router';
+import { createAnimation} from '@ionic/react';
 import {
     IonContent,
     IonFab,
@@ -69,14 +70,69 @@ const GameList: React.FC<RouteComponentProps> = ({ history }) => {
                 setGamesShow(gamesShow.filter((game) => Number(game.price) > 50 ));
         }
     }, [filterGames, gamesShow, items]);
+    function simpleAnimation() {
+        const el = document.querySelector(".title");
+        if (el) {
+            const animation = createAnimation()
+                .addElement(el)
+                .duration(1000)
+                .direction("alternate")
+                .iterations(Infinity)
+                .keyframes([
+                    { offset: 0, transform: "scale(1)", opacity: "1" },
+                    {
+                        offset: 1,
+                        transform: "scale(0.5)",
+                        opacity: "0.5",
+                    },
+                ]);
+            animation.play();
+        }
+    }
+
+    function groupAnimations() {
+        const elB = document.querySelector('.owner');
+        const elC = document.querySelector('.version');
+        if (elB && elC) {
+            const animationA = createAnimation()
+                .addElement(elB)
+                .duration(5000)
+                .keyframes([
+                    { offset: 0, transform: 'scale(1))', opacity: '0.5' },
+                    { offset: 0.5, transform: 'scale(0.8)', opacity: '1' },
+                    { offset: 1, transform: 'scale(1)', opacity: '0.5' }
+                ]);
+            const animationB = createAnimation()
+                .addElement(elC)
+                .keyframes([
+                    { offset: 0, transform: 'scale(1) rotate(0)' },
+                    { offset: 0.5, transform: 'scale(1.2) rotate(45deg)' },
+                    { offset: 1, transform: 'scale(1) rotate(45deg)' }
+                ]);
+            const parentAnimation = createAnimation()
+                .duration(1000)
+                .iterations(Infinity)
+                .addAnimation([animationA, animationB]);
+            parentAnimation.play();    }
+    }
+
+    useEffect(simpleAnimation, []);
+    useEffect(groupAnimations, []);
     return (
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>Games</IonTitle>
+                    <div className="title">
+                        <IonTitle>Games</IonTitle>
+                    </div>
                     <IonButton onClick={handleLogout}>Logout</IonButton>
                 </IonToolbar>
+
             </IonHeader>
+            {/*<div className="container">*/}
+            {/*    /!*<MyComponent />*!/*/}
+            {/*    /!*<MyModal />*!/*/}
+            {/*</div>*/}
             <IonContent>
                 <IonLoading isOpen={fetching} message="Fetching items" />
                 <IonSearchbar
@@ -126,6 +182,12 @@ const GameList: React.FC<RouteComponentProps> = ({ history }) => {
                     </IonFabButton>
                 </IonFab>
             </IonContent>
+            <div className="owner" >
+                <p>Made by Andrei Craiu</p>
+            </div>
+            <div className="version">
+                <p>Version 1.0</p>
+            </div>
         </IonPage>
     );
 };

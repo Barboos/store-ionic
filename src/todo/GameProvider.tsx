@@ -4,6 +4,9 @@ import { getLogger } from '../core';
 import { GameProps } from './GameProps';
 import { createItem, getItems, updateItem, newWebSocket } from './GameApi';
 import {AuthContext} from "../auth";
+import { Plugins } from "@capacitor/core";
+
+const { Storage } = Plugins;
 
 const log = getLogger('GameProvider');
 
@@ -92,6 +95,12 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
         }
 
         async function fetchItems() {
+            // await Storage.remove({ key: "games" });
+            let repoStorage = await Storage.get({key: "games"});
+            // console.log("games ");
+            // if (repoStorage.value != null) {
+            //     console.log(JSON.parse(repoStorage.value));
+            // }
             if (!token?.trim()) {
                 return;
             }
@@ -103,11 +112,16 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
                 console.log(items);
                 log('fetchItems succeeded');
                 if (!canceled) {
+                    await Storage.set({ key: "games", value: JSON.stringify(items) });
                     dispatch({ type: FETCH_ITEMS_SUCCEEDED, payload: { items } });
                 }
             } catch (error) {
                 log('fetchItems failed');
-                dispatch({ type: FETCH_ITEMS_FAILED, payload: { error } });
+                // dispatch({ type: FETCH_ITEMS_FAILED, payload: { error } });
+                if (repoStorage.value) {
+                    const items = JSON.parse(repoStorage.value);
+                    dispatch({ type: FETCH_ITEMS_SUCCEEDED, payload: { items } });
+                }
             }
         }
     }
