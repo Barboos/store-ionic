@@ -35,8 +35,8 @@ const App: React.FC = () => (
                     <GameProvider>
                         <PrivateRoute path="/games" component={GameList} exact={true}/>
                         <PrivateRoute path="/game" component={GameEdit} exact={true}/>
-                        {/*<PrivateRoute path="/game/:id" component={GameEdit} exact={true}/>*/}
-                        <PrivateRoute path="/game/map" component={MapPage} exact={true}/>
+                        <PrivateRoute path="/game/:id" component={GameEdit} exact={true}/>
+                        {/*<PrivateRoute path="/game/map" component={MapPage} exact={true}/>*/}
                     </GameProvider>
                     <Route exact path="/" render={() => <Redirect to="/games"/>}/>
                 </AuthProvider>

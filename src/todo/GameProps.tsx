@@ -3,4 +3,7 @@ export interface GameProps {
     title: string;
     description: string;
     price: string;
+    photoPath: string;
+    latitude: number;
+    longitude: number;
 }

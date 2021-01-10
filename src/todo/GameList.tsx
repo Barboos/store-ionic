@@ -155,13 +155,16 @@ const GameList: React.FC<RouteComponentProps> = ({ history }) => {
                     <IonList>
                         {/*.filter(game => game.indexOf(searchGames) >= 0)*/}
                         {gamesShow
-                            .map(({ _id, title, description, price}) =>
+                            .map(({ _id, title, description, price, photoPath, latitude, longitude}) =>
                             <Item
                                 key={_id}
                                 _id={_id}
                                 title={title}
                                 description={description}
                                 price={price}
+                                photoPath={photoPath}
+                                latitude = {latitude}
+                                longitude = {longitude}
                                 onEdit={(id) => history.push(`/game/${_id}`)}
                             />)}
                     </IonList>
@@ -181,42 +184,11 @@ const GameList: React.FC<RouteComponentProps> = ({ history }) => {
                         <IonIcon icon={add} />
                     </IonFabButton>
                 </IonFab>
-                <IonFab vertical="bottom" horizontal="start" slot="fixed">
-                    <IonFabButton
-                        onClick={() => {
-                            history.push("/game/map");
-                        }}
-                    >
-                        <IonIcon icon={map} />
-                    </IonFabButton>
-                </IonFab>
                 <IonFab vertical="bottom" horizontal="center" slot="fixed">
                     <IonFabButton onClick={() => takePhoto()}>
                         <IonIcon icon={camera} />
                     </IonFabButton>
                 </IonFab>
-                <IonActionSheet
-                    isOpen={!!photoToDelete}
-                    buttons={[
-                        {
-                            text: "Delete",
-                            role: "destructive",
-                            icon: trash,
-                            handler: () => {
-                                if (photoToDelete) {
-                                    deletePhoto(photoToDelete);
-                                    setPhotoToDelete(undefined);
-                                }
-                            },
-                        },
-                        {
-                            text: "Cancel",
-                            icon: close,
-                            role: "cancel",
-                        },
-                    ]}
-                    onDidDismiss={() => setPhotoToDelete(undefined)}
-                />
             </IonContent>
             <div className="owner" >
                 <p>Made by Andrei Craiu</p>

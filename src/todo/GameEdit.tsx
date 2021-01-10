@@ -10,12 +10,20 @@ import {
     IonTitle,
     IonToolbar,
     IonItem,
-    IonLabel, createAnimation, IonModal
+    IonLabel, createAnimation, IonModal,
+    IonFab,
+    IonFabButton,
+    IonIcon,
+    IonActionSheet,
 } from '@ionic/react';
 import { getLogger } from '../core';
 import { ItemContext } from './GameProvider';
 import { RouteComponentProps } from 'react-router';
 import { GameProps } from './GameProps';
+import { camera, trash, close } from "ionicons/icons";
+import { Photo, usePhotoGallery } from "../utils/usePhotoGallery";
+import { MyMap } from "../map/MyMap";
+import { PhotoViewer } from "@ionic-native/photo-viewer";
 
 const log = getLogger('GameEdit');
 
@@ -29,6 +37,11 @@ const GameEdit: React.FC<GameEditProps> = ({ history, match }) => {
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
     const [item, setItem] = useState<GameProps>();
+    const [photoPath, setPhotoPath] = useState("");
+    const { photos, takePhoto, deletePhoto } = usePhotoGallery();
+    const [photoToDelete, setPhotoToDelete] = useState<Photo>();
+    const [latitude, setLatitude] = useState(46.7667);
+    const [longitude, setLongitude] = useState(23.6000);
     useEffect(() => {
         log('useEffect');
         const routeId = match.params.id || '';
@@ -38,10 +51,11 @@ const GameEdit: React.FC<GameEditProps> = ({ history, match }) => {
             setTitle(item.title);
             setDescription(item.description);
             setPrice(item.price);
+            setPhotoPath(item.photoPath);
         }
     }, [match.params.id, items]);
     const handleSave = () => {
-        const editedItem = item ? { ...item, title, description, price } : { title, description, price };
+        const editedItem = item ? { ...item, title, description, price, photoPath, latitude, longitude } : { title, description, price, photoPath, latitude, longitude };
         console.log("aici este" + item);
         saveItem && saveItem(editedItem).then(() => history.goBack());
     };
@@ -139,10 +153,53 @@ const GameEdit: React.FC<GameEditProps> = ({ history, match }) => {
                         onIonChange={e => setPrice(e.detail.value || '')}
                     />
                 </IonItem>
+                <img src={photoPath} />
+                <MyMap
+                    lat={latitude}
+                    lng={longitude}
+                    onMapClick={(location: any) => {
+                        setLatitude(location.latLng.lat());
+                        setLongitude(location.latLng.lng());
+                    }}
+                />
                 <IonLoading isOpen={saving} />
                 {savingError && (
                     <div>{savingError.message || 'Failed to save item'}</div>
                 )}
+                <IonFab vertical="bottom" horizontal="center" slot="fixed">
+                    <IonFabButton
+                        onClick={() => {
+                            const photoTaken = takePhoto();
+                            photoTaken.then((data) => {
+                                setPhotoPath(data.webviewPath!);
+                            });
+                        }}
+                    >
+                        <IonIcon icon={camera} />
+                    </IonFabButton>
+                </IonFab>
+                <IonActionSheet
+                    isOpen={!!photoToDelete}
+                    buttons={[
+                        {
+                            text: "Delete",
+                            role: "destructive",
+                            icon: trash,
+                            handler: () => {
+                                if (photoToDelete) {
+                                    deletePhoto(photoToDelete);
+                                    setPhotoToDelete(undefined);
+                                }
+                            },
+                        },
+                        {
+                            text: "Cancel",
+                            icon: close,
+                            role: "cancel",
+                        },
+                    ]}
+                    onDidDismiss={() => setPhotoToDelete(undefined)}
+                />
             </IonContent>
             <div className="owner" >
                 <p>Made by Andrei Craiu</p>

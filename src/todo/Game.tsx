@@ -9,11 +9,12 @@ interface GamePropsExt extends GameProps {
     onEdit: (id?: string) => void;
 }
 
-const Game: React.FC<GamePropsExt> = ({ _id, title, description, price, onEdit }) => {
+const Game: React.FC<GamePropsExt> = ({ _id, title, description, price, onEdit, photoPath }) => {
 
     return (
         <IonItem onClick={() => onEdit(_id)}>
             <IonLabel>{title}, {description}, {price}</IonLabel>
+            <img src={photoPath} style={{ height: 50 }} />
         </IonItem>
     );
 };
